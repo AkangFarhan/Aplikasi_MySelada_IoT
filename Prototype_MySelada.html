@@ -1,0 +1,2400 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>MySelada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+      tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] } } } };
+    </script>
+    <style>
+      :root {
+        --bg: #f0f4ec;
+        --card: #fff;
+        --card2: #f6f9f3;
+        --input: #eaf0e5;
+        --nav: rgba(255, 255, 255, 0.94);
+        --t1: #1a2e1a;
+        --t2: #5c6b5c;
+        --t3: #9ca89c;
+        --accent: #2e7d32;
+        --accent2: #1b5e20;
+        --accentL: #e8f5e9;
+        --accentM: #66bb6a;
+        --glow: rgba(46, 125, 50, 0.2);
+        --bdr: #d5ddd5;
+        --sh: 0 2px 12px rgba(30, 60, 30, 0.06);
+        --safe-bg: #e8f5e9;
+        --safe-t: #1b5e20;
+        --safe-ic: #4caf50;
+        --warn-bg: #fff8e1;
+        --warn-t: #e65100;
+        --warn-ic: #ff9800;
+        --crit-bg: #ffebee;
+        --crit-t: #b71c1c;
+        --crit-ic: #f44336;
+      }
+      [data-theme='dark'] {
+        --bg: #0a120a;
+        --card: #121e12;
+        --card2: #162016;
+        --input: #1a2c1a;
+        --nav: rgba(10, 18, 10, 0.94);
+        --t1: #e8f5e9;
+        --t2: #a5b8a5;
+        --t3: #6b7e6b;
+        --accent: #66bb6a;
+        --accent2: #a5d6a7;
+        --accentL: #1b3a1b;
+        --accentM: #81c784;
+        --glow: rgba(102, 187, 106, 0.15);
+        --bdr: #1e301e;
+        --sh: 0 2px 12px rgba(0, 0, 0, 0.3);
+        --safe-bg: #1b3a1b;
+        --safe-t: #a5d6a7;
+        --safe-ic: #66bb6a;
+        --warn-bg: #3e2723;
+        --warn-t: #ffcc80;
+        --warn-ic: #ff9800;
+        --crit-bg: #3e1515;
+        --crit-t: #ef9a9a;
+        --crit-ic: #f44336;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: #020502;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .ms {
+        font-family: 'Material Symbols Outlined';
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        font-size: 24px;
+        line-height: 1;
+      }
+      .mso {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+
+      #app {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        height: 100dvh;
+        background: var(--bg);
+        overflow: hidden;
+        box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
+        z-index: 2;
+        transition: background 0.4s;
+      }
+      @media (min-width: 900px) {
+        #app {
+          max-width: 1400px;
+          border-radius: 24px;
+          height: 96vh;
+        }
+      }
+      @media (max-width: 480px) {
+        #app {
+          box-shadow: none;
+        }
+      }
+
+      .screens {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .scr {
+        position: absolute;
+        inset: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        opacity: 0;
+        transform: translateX(40px);
+        pointer-events: none;
+        transition:
+          opacity 0.32s ease,
+          transform 0.32s ease;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .scr::-webkit-scrollbar {
+        display: none;
+      }
+      .scr.on {
+        opacity: 1;
+        transform: translateX(0);
+        pointer-events: auto;
+      }
+      .scr.out {
+        opacity: 0;
+        transform: translateX(-40px);
+        pointer-events: none;
+      }
+
+      .sbar {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 24px 4px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--t1);
+        background: transparent;
+      }
+      @media (min-width: 900px) {
+        .sbar {
+          padding: 16px 40px 6px;
+          font-size: 14px;
+        }
+      }
+
+      .bnav-wrap {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 90;
+        transform: translateY(100%);
+        transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .bnav-wrap.show {
+        transform: translateY(0);
+      }
+      .bnav {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        padding: 6px 10px 10px;
+        background: var(--nav);
+        backdrop-filter: blur(24px);
+        border-top: 1px solid var(--bdr);
+      }
+      .ni {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        cursor: pointer;
+        padding: 6px 14px 6px;
+        border-radius: 14px;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 2;
+      }
+      .ni .ms {
+        font-size: 24px;
+        color: var(--t3);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .ni .nl {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--t3);
+        transition: color 0.3s;
+        letter-spacing: 0.2px;
+        margin-top: 1px;
+      }
+      .ni.on {
+        background: var(--accentL);
+      }
+      .ni.on .ms {
+        color: var(--accent);
+        font-variation-settings:
+          'FILL' 1,
+          'wght' 500,
+          'GRAD' 0,
+          'opsz 24';
+        transform: scale(1.08);
+      }
+      .ni.on .nl {
+        color: var(--accent);
+      }
+      .ni.on::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        width: 20px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+      }
+      .nbadge {
+        position: absolute;
+        top: 2px;
+        right: 6px;
+        width: 8px;
+        height: 8px;
+        background: #ef4444;
+        border-radius: 50%;
+        border: 2px solid var(--card);
+      }
+
+      .pbar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--bdr);
+        z-index: 60;
+      }
+      .pfill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--accentM));
+        border-radius: 0 2px 2px 0;
+        transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .btn1 {
+        width: 100%;
+        padding: 16px;
+        border: none;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #2e7d32, #1b5e20);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: inherit;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        box-shadow: 0 4px 20px rgba(46, 125, 50, 0.3);
+      }
+      .btn1:active {
+        transform: scale(0.97);
+      }
+      .btn2 {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid var(--bdr);
+        border-radius: 16px;
+        background: transparent;
+        color: var(--t1);
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+      }
+      .btn2:active {
+        transform: scale(0.97);
+        background: var(--input);
+      }
+      .ifield {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid var(--bdr);
+        border-radius: 14px;
+        background: var(--input);
+        color: var(--t1);
+        font-size: 15px;
+        font-family: inherit;
+        outline: none;
+        transition: border-color 0.25s;
+      }
+      .ifield:focus {
+        border-color: var(--accent);
+      }
+      .ifield::placeholder {
+        color: var(--t3);
+      }
+
+      .card {
+        background: var(--card);
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh);
+        transition: transform 0.2s;
+      }
+
+      .param-card {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 14px 16px;
+        border: 1px solid var(--bdr);
+        box-shadow: var(--sh);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        cursor: pointer;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .param-card:active {
+        transform: scale(0.98);
+      }
+      .param-ic {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .param-ic .ms {
+        font-size: 22px;
+      }
+      .param-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .param-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--t2);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .param-val {
+        font-size: 24px;
+        font-weight: 800;
+        color: var(--t1);
+        line-height: 1.1;
+        margin-top: 2px;
+      }
+      .param-unit {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--t3);
+      }
+      .param-hint {
+        font-size: 11px;
+        font-weight: 500;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+      }
+      .param-hint .ms {
+        font-size: 13px;
+      }
+      .param-tip {
+        font-size: 10.5px;
+        color: var(--t3);
+        margin-top: 3px;
+        font-style: italic;
+        line-height: 1.4;
+        padding-left: 2px;
+      }
+      .hint-safe {
+        color: var(--safe-ic);
+      }
+      .hint-warn {
+        color: var(--warn-ic);
+      }
+      .hint-crit {
+        color: var(--crit-ic);
+      }
+      .param-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        padding: 3px 10px;
+        border-radius: 8px;
+        font-size: 10px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .pb-safe {
+        background: var(--safe-bg);
+        color: var(--safe-t);
+      }
+      .pb-warn {
+        background: var(--warn-bg);
+        color: var(--warn-t);
+      }
+      .pb-crit {
+        background: var(--crit-bg);
+        color: var(--crit-t);
+      }
+
+      /* Plant Status Hero */
+      .plant-status-card {
+        border-radius: 20px;
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          background 0.5s ease,
+          border-color 0.5s ease;
+      }
+      .plant-status-card.status-healthy {
+        background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+        border: 2px solid #4caf50;
+      }
+      [data-theme='dark'] .plant-status-card.status-healthy {
+        background: linear-gradient(135deg, #1b3a1b, #1b4d1b);
+        border-color: #2e7d32;
+      }
+      .plant-status-card.status-attention {
+        background: linear-gradient(135deg, #fff8e1, #ffecb3);
+        border: 2px solid #ff9800;
+      }
+      [data-theme='dark'] .plant-status-card.status-attention {
+        background: linear-gradient(135deg, #3e2723, #4e342e);
+        border-color: #e65100;
+      }
+      .plant-status-card.status-critical {
+        background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        border: 2px solid #f44336;
+      }
+      [data-theme='dark'] .plant-status-card.status-critical {
+        background: linear-gradient(135deg, #3e1515, #4e1a1a);
+        border-color: #c62828;
+      }
+      .plant-status-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .plant-status-icon .ms {
+        font-size: 28px;
+        color: #fff;
+      }
+      .plant-status-pulse {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        opacity: 0.15;
+        animation: pulse 3s ease-in-out infinite;
+      }
+      .status-action {
+        margin-top: 12px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        font-size: 12px;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+      .status-healthy .status-action {
+        background: rgba(46, 125, 50, 0.1);
+        color: #1b5e20;
+      }
+      [data-theme='dark'] .status-healthy .status-action {
+        background: rgba(102, 187, 106, 0.1);
+        color: #a5d6a7;
+      }
+      .status-attention .status-action {
+        background: rgba(230, 81, 0, 0.1);
+        color: #e65100;
+      }
+      [data-theme='dark'] .status-attention .status-action {
+        background: rgba(255, 152, 0, 0.1);
+        color: #ffcc80;
+      }
+      .status-critical .status-action {
+        background: rgba(183, 28, 28, 0.1);
+        color: #b71c1c;
+      }
+      [data-theme='dark'] .status-critical .status-action {
+        background: rgba(244, 67, 54, 0.1);
+        color: #ef9a9a;
+      }
+      .status-action-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        margin-top: 6px;
+      }
+      .status-action-step .ms {
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* Automation */
+      .auto-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 0;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--t2);
+      }
+      .auto-item .ms {
+        font-size: 16px;
+        color: var(--accent);
+      }
+      .auto-item.off .ms {
+        color: var(--t3);
+      }
+      .auto-tip {
+        font-size: 11px;
+        color: var(--t3);
+        font-style: italic;
+        line-height: 1.4;
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: var(--input);
+        border-radius: 10px;
+      }
+
+      .harvest-bar-track {
+        width: 100%;
+        height: 10px;
+        border-radius: 5px;
+        background: var(--bdr);
+        overflow: hidden;
+        position: relative;
+      }
+      .harvest-bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        background: linear-gradient(90deg, #2e7d32, #66bb6a);
+        transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .health-ring-wrap {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        margin: 0 auto;
+      }
+      .health-ring-wrap svg {
+        transform: rotate(-90deg);
+      }
+      .health-ring-bg {
+        fill: none;
+        stroke: var(--bdr);
+        stroke-width: 8;
+      }
+      .health-ring-fg {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .health-pct {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .health-pct .val {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--t1);
+        line-height: 1;
+      }
+      .health-pct .lbl {
+        font-size: 9px;
+        font-weight: 600;
+        color: var(--t2);
+        margin-top: 2px;
+      }
+
+      .tgl {
+        width: 52px;
+        height: 30px;
+        border-radius: 15px;
+        cursor: pointer;
+        background: var(--bdr);
+        position: relative;
+        transition: background 0.3s;
+        flex-shrink: 0;
+      }
+      .tgl.on {
+        background: var(--accent);
+      }
+      .tgl::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: #fff;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      .tgl.on::after {
+        transform: translateX(22px);
+      }
+
+      .ncard {
+        background: var(--card);
+        border-radius: 16px;
+        padding: 14px;
+        border: 1px solid var(--bdr);
+        margin-bottom: 10px;
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        box-shadow: var(--sh);
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .ncard:active {
+        transform: scale(0.98);
+      }
+      .nicon {
+        width: 38px;
+        height: 38px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .nicon .ms {
+        font-size: 18px;
+        color: #fff;
+      }
+      .nfix {
+        margin-top: 8px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-size: 11px;
+        line-height: 1.5;
+        font-weight: 500;
+      }
+      .nfix-step {
+        display: flex;
+        align-items: flex-start;
+        gap: 5px;
+        margin-top: 4px;
+      }
+      .nfix-step .ms {
+        font-size: 14px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .nfix-safe {
+        background: var(--safe-bg);
+        color: var(--safe-t);
+      }
+      .nfix-warn {
+        background: var(--warn-bg);
+        color: var(--warn-t);
+      }
+      .nfix-crit {
+        background: var(--crit-bg);
+        color: var(--crit-t);
+      }
+
+      .sec-opt {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 16px;
+        background: var(--card);
+        border-radius: 16px;
+        border: 1px solid var(--bdr);
+        margin-bottom: 10px;
+        cursor: pointer;
+        box-shadow: var(--sh);
+        transition: transform 0.2s;
+      }
+      .sec-opt:active {
+        transform: scale(0.98);
+      }
+      .sec-ic {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 200;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+      .modal-bg.vis {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .modal-c {
+        width: calc(100% - 48px);
+        max-width: 400px;
+        background: var(--card);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .modal-bg.vis .modal-c {
+        transform: scale(1);
+      }
+
+      .toast {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        z-index: 300;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transform: translateY(-16px);
+        opacity: 0;
+        transition: all 0.35s ease;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+      .toast.vis {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast-ok {
+        background: #1b5e20;
+        color: #a5d6a7;
+      }
+      .toast-warn {
+        background: #e65100;
+        color: #ffe0b2;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        background: var(--input);
+        color: var(--t2);
+        cursor: pointer;
+        transition: all 0.25s;
+        border: 1px solid transparent;
+      }
+      .tab.on {
+        background: var(--accentL);
+        color: var(--accent2);
+        border-color: var(--accent);
+      }
+      .devst {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        background: var(--accentL);
+        color: var(--accent2);
+      }
+      .devst .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: pulse 2s ease infinite;
+      }
+      .ssel {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 18px 10px;
+        border-radius: 16px;
+        background: var(--card);
+        border: 2px solid var(--bdr);
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .ssel.on {
+        border-color: var(--accent);
+        background: var(--accentL);
+      }
+      .ssel:active {
+        transform: scale(0.96);
+      }
+
+      .ctrl-hint {
+        font-size: 10.5px;
+        color: var(--t3);
+        font-style: italic;
+        line-height: 1.4;
+        margin-top: 2px;
+        padding-left: 2px;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(1.3);
+          opacity: 0.6;
+        }
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(14px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .apulse {
+        animation: pulse 2s ease-in-out infinite;
+      }
+      .aspin {
+        animation: spin 1.2s linear infinite;
+      }
+      .afloat {
+        animation: float 3s ease-in-out infinite;
+      }
+      .fu1 {
+        animation: fadeUp 0.45s 0.08s ease forwards;
+        opacity: 0;
+      }
+      .fu2 {
+        animation: fadeUp 0.45s 0.16s ease forwards;
+        opacity: 0;
+      }
+      .fu3 {
+        animation: fadeUp 0.45s 0.24s ease forwards;
+        opacity: 0;
+      }
+      .fu4 {
+        animation: fadeUp 0.45s 0.32s ease forwards;
+        opacity: 0;
+      }
+
+      @media (min-width: 900px) {
+        .dash-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .dash-bottom-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .analytics-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .controls-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+        .notif-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+        .health-ring-wrap {
+          width: 130px;
+          height: 130px;
+        }
+        .health-ring-wrap svg {
+          width: 130px;
+          height: 130px;
+        }
+        .param-val {
+          font-size: 28px;
+        }
+        .h1-resp {
+          font-size: 26px;
+        }
+        .sbar {
+          padding: 16px 40px 6px;
+          font-size: 14px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div class="screens">
+        <!-- WELCOME -->
+        <div class="scr on" id="s-welcome">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 28px; background: linear-gradient(180deg, var(--bg) 50%, var(--accentL) 100%); text-align: center">
+            <svg width="160" height="160" viewBox="0 0 160 160" fill="none" style="margin-bottom: 32px" class="afloat">
+              <circle cx="80" cy="80" r="65" fill="var(--accentL)" opacity=".5" />
+              <circle cx="80" cy="80" r="44" fill="var(--accentL)" opacity=".8" />
+              <path d="M80 118C80 118 46 92 46 64C46 42 62 34 80 52C98 34 114 42 114 64C114 92 80 118 80 118Z" fill="#2E7D32" />
+              <path d="M80 108C80 108 56 88 56 66C56 50 66 44 80 56C94 44 104 50 104 66C104 88 80 108 80 108Z" fill="#66BB6A" opacity=".6" />
+              <line x1="80" y1="118" x2="80" y2="142" stroke="#1B5E20" stroke-width="3" stroke-linecap="round" />
+            </svg>
+            <h2 style="font-size: 28px; font-weight: 800; color: var(--t1); line-height: 1.15; margin-bottom: 10px">Grow Smarter,<br />Harvest Better</h2>
+            <p style="font-size: 14px; color: var(--t2); line-height: 1.6; margin-bottom: 32px; max-width: 400px">Monitor your hydroponic lettuce the easy way. We'll guide you every step.</p>
+            <div style="width: 100%; max-width: 320px"><button class="btn1" onclick="go('s-login')">Get Started</button></div>
+            <span style="font-size: 13px; color: var(--t3); cursor: pointer; margin-top: 14px" onclick="enterDash()">Skip to Demo</span>
+          </div>
+        </div>
+
+        <!-- LOGIN -->
+        <div class="scr" id="s-login">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px 24px">
+            <div class="pbar"><div class="pfill" style="width: 14%"></div></div>
+            <div style="text-align: center; margin-bottom: 28px">
+              <div style="width: 52px; height: 52px; border-radius: 16px; background: linear-gradient(135deg, #2e7d32, #1b5e20); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 14px">
+                <span class="ms" style="color: #fff; font-size: 26px">eco</span>
+              </div>
+              <h2 style="font-size: 24px; font-weight: 800; color: var(--t1)">Welcome Back</h2>
+              <p style="font-size: 13px; color: var(--t2); margin-top: 4px">Sign in to your account</p>
+            </div>
+            <div style="max-width: 400px; margin: 0 auto; width: 100%">
+              <label style="font-size: 12px; font-weight: 600; color: var(--t2); margin-bottom: 5px; display: block">Email Address</label>
+              <input class="ifield" style="margin-bottom: 14px" placeholder="farmer@hydrogrove.io" value="user@MySelada.io" />
+              <label style="font-size: 12px; font-weight: 600; color: var(--t2); margin-bottom: 5px; display: block">Password</label>
+              <input class="ifield" type="password" style="margin-bottom: 6px" placeholder="Enter password" value="password123" />
+              <div style="text-align: right; margin-bottom: 20px"><span style="font-size: 12px; color: var(--accent); font-weight: 600; cursor: pointer">Forgot Password?</span></div>
+              <button class="btn1" onclick="go('s-o1')">Sign In</button>
+              <div style="display: flex; align-items: center; gap: 10px; margin: 18px 0">
+                <div style="flex: 1; height: 1px; background: var(--bdr)"></div>
+                <span style="font-size: 11px; color: var(--t3)">or continue with</span>
+                <div style="flex: 1; height: 1px; background: var(--bdr)"></div>
+              </div>
+              <div style="display: flex; gap: 10px">
+                <button class="btn2" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 13px" onclick="go('s-o1')">
+                  <svg width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" /></svg
+                  >Google
+                </button>
+                <button class="btn2" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 13px" onclick="go('s-o1')">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--t1)">
+                    <path
+                      d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" /></svg
+                  >Apple
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ONBOARD 1 -->
+        <div class="scr" id="s-o1">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px 24px; text-align: center">
+            <div class="pbar"><div class="pfill" style="width: 25%"></div></div>
+            <div class="sbar">
+              <span>9:41</span>
+              <div style="cursor: pointer"><span class="ms mso" onclick="go('s-login')">arrow_back</span></div>
+            </div>
+            <div style="width: 120px; height: 120px; border-radius: 32px; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin: 0 auto 28px">
+              <span class="ms" style="font-size: 56px; color: var(--accent)">devices</span>
+            </div>
+            <h2 style="font-size: 24px; font-weight: 800; color: var(--t1); margin-bottom: 8px">Add Your First Device</h2>
+            <p style="font-size: 14px; color: var(--t2); line-height: 1.6; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto">
+              Connect your HydroGrove sensor node. All sensors are detected automatically — no manual setup needed.
+            </p>
+            <p style="font-size: 12px; color: var(--t3); font-style: italic; margin-bottom: 28px; max-width: 320px; margin-left: auto; margin-right: auto">Kamu tinggal hubungkan, sisanya otomatis.</p>
+            <div style="max-width: 320px; margin: 0 auto"><button class="btn1" onclick="go('s-o2')">Add Device</button></div>
+          </div>
+        </div>
+
+        <!-- ONBOARD 2: Auto Detect -->
+        <div class="scr" id="s-o2">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px 24px; text-align: center">
+            <div class="pbar"><div class="pfill" style="width: 50%"></div></div>
+            <div class="sbar">
+              <span>9:41</span>
+              <div style="cursor: pointer"><span class="ms mso" onclick="go('s-o1')">arrow_back</span></div>
+            </div>
+            <div style="width: 120px; height: 120px; border-radius: 32px; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px" class="afloat">
+              <span class="ms" style="font-size: 56px; color: var(--accent)">sensors</span>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--t1); margin-bottom: 8px">Automatic Sensor Detection</h2>
+            <p style="font-size: 14px; color: var(--t2); line-height: 1.6; margin-bottom: 20px; max-width: 360px; margin-left: auto; margin-right: auto">HydroGrove detects all connected sensors automatically. No configuration needed.</p>
+            <div style="max-width: 320px; margin: 0 auto 28px">
+              <div style="display: flex; flex-direction: column; gap: 10px; text-align: left">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--card); border-radius: 12px; border: 1px solid var(--bdr)">
+                  <span class="ms" style="font-size: 18px; color: var(--accent)">check_circle</span><span style="font-size: 12px; font-weight: 500; color: var(--t1)">pH sensor detected</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--card); border-radius: 12px; border: 1px solid var(--bdr)">
+                  <span class="ms" style="font-size: 18px; color: var(--accent)">check_circle</span><span style="font-size: 12px; font-weight: 500; color: var(--t1)">TDS sensor detected</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--card); border-radius: 12px; border: 1px solid var(--bdr)">
+                  <span class="ms" style="font-size: 18px; color: var(--accent)">check_circle</span><span style="font-size: 12px; font-weight: 500; color: var(--t1)">Temperature sensor detected</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--card); border-radius: 12px; border: 1px solid var(--bdr)">
+                  <span class="ms" style="font-size: 18px; color: var(--accent)">check_circle</span><span style="font-size: 12px; font-weight: 500; color: var(--t1)">Humidity sensor detected</span>
+                </div>
+              </div>
+            </div>
+            <div style="max-width: 320px; margin: 0 auto"><button class="btn1" onclick="go('s-o3')">Continue to Pairing</button></div>
+          </div>
+        </div>
+
+        <!-- ONBOARD 3: Pair -->
+        <div class="scr" id="s-o3">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; padding: 40px 24px; text-align: center">
+            <div class="pbar"><div class="pfill" style="width: 75%"></div></div>
+            <div class="sbar">
+              <span>9:41</span>
+              <div style="cursor: pointer"><span class="ms mso" onclick="go('s-o2')">arrow_back</span></div>
+            </div>
+            <div style="width: 120px; height: 120px; border-radius: 32px; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin: 0 auto 24px" class="afloat">
+              <span class="ms" style="font-size: 56px; color: var(--accent)">bluetooth</span>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--t1); margin-bottom: 8px">Pair Your Device</h2>
+            <p style="font-size: 14px; color: var(--t2); line-height: 1.6; margin-bottom: 20px; max-width: 360px; margin-left: auto; margin-right: auto">Enable Bluetooth and press the pairing button on your HydroNode.</p>
+            <div style="max-width: 320px; margin: 0 auto"><button class="btn1" onclick="startPair()">Start Pairing</button></div>
+          </div>
+        </div>
+
+        <!-- ONBOARD 4: Pairing -->
+        <div class="scr" id="s-o4">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px; text-align: center">
+            <div class="pbar"><div class="pfill" style="width: 90%"></div></div>
+            <div style="position: relative; width: 130px; height: 130px; margin-bottom: 28px">
+              <svg width="130" height="130" viewBox="0 0 130 130" style="transform: rotate(-90deg)">
+                <circle cx="65" cy="65" r="55" fill="none" stroke="var(--bdr)" stroke-width="8" />
+                <circle
+                  cx="65"
+                  cy="65"
+                  r="55"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="8"
+                  stroke-linecap="round"
+                  stroke-dasharray="346"
+                  id="pairCircle"
+                  stroke-dashoffset="346"
+                  style="transition: stroke-dashoffset 2.8s cubic-bezier(0.16, 1, 0.3, 1)" />
+              </svg>
+              <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center">
+                <span
+                  class="ms aspin"
+                  style="
+                    font-size: 34px;
+                    color: var(--accent);
+                    font-variation-settings:
+                      'FILL' 0,
+                      'wght' 300,
+                      'GRAD' 0,
+                      'opsz' 24;
+                  "
+                  >sync</span
+                >
+              </div>
+            </div>
+            <h2 style="font-size: 22px; font-weight: 800; color: var(--t1); margin-bottom: 6px">Pairing Device</h2>
+            <p style="font-size: 13px; color: var(--t2)" id="pairStatus">Searching for HydroNode...</p>
+            <div style="margin-top: 14px; font-size: 30px; font-weight: 800; color: var(--accent)" id="pairPct">0%</div>
+          </div>
+        </div>
+
+        <!-- ONBOARD 5: Success -->
+        <div class="scr" id="s-o5">
+          <div style="min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px 24px; text-align: center; background: linear-gradient(180deg, var(--bg) 60%, var(--accentL) 100%)">
+            <div class="pbar"><div class="pfill" style="width: 100%"></div></div>
+            <div style="width: 90px; height: 90px; border-radius: 50%; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; box-shadow: 0 0 40px var(--glow)">
+              <span class="ms" style="font-size: 44px; color: var(--accent)">check_circle</span>
+            </div>
+            <h2 style="font-size: 26px; font-weight: 800; color: var(--t1); margin-bottom: 6px">Device Connected!</h2>
+            <p style="font-size: 14px; color: var(--t2); line-height: 1.6; max-width: 300px; margin-bottom: 6px">Your hydroponic system is now online.</p>
+            <p style="font-size: 13px; color: var(--accent); font-style: italic; margin-bottom: 28px">Perangkat berhasil terhubung dan siap digunakan.</p>
+            <div style="max-width: 320px; width: 100%"><button class="btn1" onclick="enterDash()">Go to Dashboard</button></div>
+          </div>
+        </div>
+
+        <!-- ====== DASHBOARD ====== -->
+        <div class="scr" id="s-dash">
+          <div style="padding: 0 20px 120px; max-width: 1200px; margin: 0 auto">
+            <div style="padding: 52px 0 14px; display: flex; justify-content: space-between; align-items: center">
+              <div>
+                <p style="font-size: 12px; color: var(--t2); font-weight: 500" id="greeting">Good Morning</p>
+                <h1 style="font-size: 22px; font-weight: 800; color: var(--t1)" class="h1-resp">User!</h1>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px">
+                <div class="devst">
+                  <div class="dot"></div>
+                  Online
+                </div>
+                <div style="width: 38px; height: 38px; border-radius: 13px; overflow: hidden; cursor: pointer" onclick="nav('profile')">
+                  <img src="https://picsum.photos/seed/alex42/76/76.jpg" style="width: 100%; height: 100%; object-fit: cover" alt="Avatar" />
+                </div>
+              </div>
+            </div>
+
+            <!-- PLANT STATUS HERO -->
+            <div class="plant-status-card status-healthy" id="plantStatusCard" style="margin-bottom: 16px">
+              <div class="plant-status-pulse" id="plantStatusPulse" style="background: #4caf50"></div>
+              <div style="display: flex; align-items: center; gap: 14px; position: relative; z-index: 1">
+                <div class="plant-status-icon" id="plantStatusIcon" style="background: #4caf50"><span class="ms" id="plantStatusIcMs">eco</span></div>
+                <div style="flex: 1">
+                  <div style="font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.7; color: #1b5e20" id="plantStatusLabel">Status Selada</div>
+                  <div style="font-size: 22px; font-weight: 800; line-height: 1.2; margin-top: 2px; color: #1b5e20" id="plantStatusTitle">Healthy</div>
+                  <div style="font-size: 12px; margin-top: 3px; opacity: 0.8; line-height: 1.4; color: #2e7d32" id="plantStatusDesc">All conditions are ideal for growth.</div>
+                </div>
+              </div>
+              <div class="status-action" id="plantStatusAction">
+                <div style="font-style: italic; color: inherit; opacity: 0.85" id="plantStatusTip">Tanaman kamu lagi sehat nih.</div>
+              </div>
+            </div>
+
+            <!-- Crop Banner -->
+            <div style="border-radius: 18px; overflow: hidden; position: relative; margin-bottom: 16px; height: 100px; box-shadow: var(--sh)">
+              <img src="https://picsum.photos/seed/lettuce88/1200/300.jpg" style="width: 100%; height: 100%; object-fit: cover" alt="Lettuce" />
+              <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(27, 94, 32, 0.88), rgba(46, 125, 50, 0.6)); display: flex; align-items: center; padding: 16px">
+                <div style="flex: 1">
+                  <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px">
+                    <span class="ms" style="font-size: 14px; color: #a5d6a7">eco</span><span style="font-size: 10px; font-weight: 600; color: rgba(255, 255, 255, 0.7); text-transform: uppercase; letter-spacing: 0.5px">Selada A</span>
+                  </div>
+                  <h3 style="font-size: 18px; font-weight: 800; color: #fff">Selada</h3>
+                  <span style="font-size: 10px; color: rgba(255, 255, 255, 0.5)">Batch #12 — Pertanian A</span>
+                </div>
+                <div style="text-align: center; background: rgba(255, 255, 255, 0.12); border-radius: 12px; padding: 8px 14px; backdrop-filter: blur(8px)">
+                  <div style="font-size: 8px; color: rgba(255, 255, 255, 0.6); font-weight: 600; margin-top: 1px">HARI KE</div>
+                  <div style="font-size: 24px; font-weight: 800; color: #fff; line-height: 1">21</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Harvest + Health -->
+            <div class="dash-bottom-grid" style="margin-bottom: 14px">
+              <div class="card" style="padding: 16px 18px">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+                  <div>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Estimasi Panen</div>
+                    <div style="font-size: 11px; color: var(--t2)">Harvest Estimation</div>
+                  </div>
+                  <div style="text-align: right">
+                    <div style="font-size: 18px; font-weight: 800; color: var(--accent)" id="hDays2">14</div>
+                    <div style="font-size: 9px; color: var(--t3); font-weight: 600">HARI LAGI</div>
+                  </div>
+                </div>
+                <div class="harvest-bar-track"><div class="harvest-bar-fill" id="harvestBarFill" style="width: 0%"></div></div>
+                <div style="display: flex; justify-content: space-between; margin-top: 6px">
+                  <span style="font-size: 10px; color: var(--t3)">Day 1</span><span style="font-size: 11px; font-weight: 700; color: var(--accent)" id="hPct2">60%</span><span style="font-size: 10px; color: var(--t3)">Day 35</span>
+                </div>
+              </div>
+              <div class="card" style="padding: 20px; text-align: center">
+                <div style="font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 14px">Health Score</div>
+                <div class="health-ring-wrap">
+                  <svg width="110" height="110" viewBox="0 0 110 110">
+                    <circle cx="55" cy="55" r="44" class="health-ring-bg" />
+                    <circle cx="55" cy="55" r="44" class="health-ring-fg" id="healthRing" stroke="#2E7D32" stroke-dasharray="276" stroke-dashoffset="276" />
+                  </svg>
+                  <div class="health-pct">
+                    <div class="val" id="healthVal">0</div>
+                    <div class="lbl">/100</div>
+                  </div>
+                </div>
+                <div
+                  style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 14px; border-radius: 10px; font-size: 11px; font-weight: 700; margin-top: 8px; background: var(--accentL); color: var(--accent2)"
+                  id="healthBadge">
+                  <span class="ms" style="font-size: 13px; color: var(--accent)">verified</span><span id="healthLabel">Excellent</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sensor Cards with hints + Indonesian tips -->
+            <div class="dash-grid" style="margin-bottom: 14px">
+              <div class="param-card fu1" onclick="showSensorDetail('Temp')">
+                <div class="param-ic" style="background: #e3f2fd"><span class="ms" style="color: #1565c0">thermostat</span></div>
+                <div class="param-info">
+                  <div class="param-label">Water Temperature</div>
+                  <div class="param-val"><span id="vTemp2">24</span><span class="param-unit">°C</span></div>
+                  <div class="param-hint hint-safe" id="hintTemp"><span class="ms">check_circle</span>Safe for healthy root growth</div>
+                  <div class="param-tip" id="tipTemp">Suhu air masih aman.</div>
+                </div>
+                <div class="param-badge pb-safe" id="bTemp2"><span class="ms" style="font-size: 11px; color: var(--safe-ic)">check_circle</span> Safe</div>
+              </div>
+              <div class="param-card fu2" onclick="showSensorDetail('pH')">
+                <div class="param-ic" style="background: var(--accentL)"><span class="ms" style="color: var(--accent)">science</span></div>
+                <div class="param-info">
+                  <div class="param-label">pH Level</div>
+                  <div class="param-val"><span id="vPh2">6.2</span></div>
+                  <div class="param-hint hint-safe" id="hintPh"><span class="ms">check_circle</span>Ideal for lettuce growth</div>
+                  <div class="param-tip" id="tipPh">Nilai ini sudah pas untuk pertumbuhan tanaman.</div>
+                </div>
+                <div class="param-badge pb-safe" id="bPh2"><span class="ms" style="font-size: 11px; color: var(--safe-ic)">check_circle</span> Safe</div>
+              </div>
+              <div class="param-card fu3" onclick="showSensorDetail('TDS')">
+                <div class="param-ic" style="background: #fff8e1"><span class="ms" style="color: #e65100">grain</span></div>
+                <div class="param-info">
+                  <div class="param-label">TDS / Nutrient</div>
+                  <div class="param-val"><span id="vTds2">950</span><span class="param-unit">ppm</span></div>
+                  <div class="param-hint hint-safe" id="hintTds"><span class="ms">check_circle</span>Nutrient concentration optimal</div>
+                  <div class="param-tip" id="tipTds">Nutrisi tanaman masih aman.</div>
+                </div>
+                <div class="param-badge pb-safe" id="bTds2"><span class="ms" style="font-size: 11px; color: var(--safe-ic)">check_circle</span> Safe</div>
+              </div>
+              <div class="param-card fu4" onclick="showSensorDetail('Humidity')">
+                <div class="param-ic" style="background: #ede7f6"><span class="ms" style="color: #4527a0">humidity_percentage</span></div>
+                <div class="param-info">
+                  <div class="param-label">Humidity</div>
+                  <div class="param-val"><span id="vHum2">72</span><span class="param-unit">%</span></div>
+                  <div class="param-hint hint-safe" id="hintHum"><span class="ms">check_circle</span>Suitable growing environment</div>
+                  <div class="param-tip" id="tipHum">Kondisi udara masih nyaman untuk tanaman.</div>
+                </div>
+                <div class="param-badge pb-safe" id="bHum2"><span class="ms" style="font-size: 11px; color: var(--safe-ic)">check_circle</span> Safe</div>
+              </div>
+            </div>
+
+            <!-- AUTOMATION STATUS -->
+            <div class="card" style="padding: 16px 18px; margin-bottom: 14px">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px">
+                <div style="display: flex; align-items: center; gap: 10px">
+                  <div style="width: 40px; height: 40px; border-radius: 12px; background: var(--accentL); display: flex; align-items: center; justify-content: center">
+                    <span class="ms" style="color: var(--accent); font-size: 20px">autorenew</span>
+                  </div>
+                  <div>
+                    <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Automation Status</div>
+                    <div style="font-size: 11px; color: var(--accent); font-weight: 600" id="autoModeLabel">Active</div>
+                  </div>
+                </div>
+                <div class="tgl on" id="autoModeTgl" onclick="toggleAutoMode()"></div>
+              </div>
+              <div id="autoItems">
+                <div class="auto-item" id="autoCooling"><span class="ms">check_circle</span>Auto Cooling enabled</div>
+                <div class="auto-item" id="autoNutrient"><span class="ms">check_circle</span>Auto Nutrient Adjustment enabled</div>
+                <div class="auto-item" id="autoMonitor"><span class="ms">check_circle</span>Real-time monitoring active</div>
+                <div class="auto-item" id="autoAlert"><span class="ms">check_circle</span>Smart alerts enabled</div>
+              </div>
+              <div class="auto-tip" id="autoTip">Sistem sedang membantu menjaga tanaman secara otomatis.</div>
+            </div>
+
+            <div style="text-align: center; padding: 4px 0"><span style="font-size: 10px; color: var(--t3)" id="lastUpdate">Updated 2s ago</span></div>
+          </div>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div class="scr" id="s-analytics">
+          <div style="padding: 52px 20px 120px; max-width: 1200px; margin: 0 auto">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px">
+              <h1 style="font-size: 22px; font-weight: 800; color: var(--t1)" class="h1-resp">Analytics</h1>
+              <div class="devst">
+                <div class="dot"></div>
+                Live
+              </div>
+            </div>
+            <div class="tabs" id="aTabs">
+              <div class="tab on" onclick="setATab(this)">Daily</div>
+              <div class="tab" onclick="setATab(this)">Weekly</div>
+              <div class="tab" onclick="setATab(this)">Monthly</div>
+            </div>
+            <div class="analytics-grid">
+              <div class="card" style="margin-bottom: 12px">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--t2)">Water pH</div>
+                    <div style="font-size: 20px; font-weight: 800; color: var(--t1)">6.2 <span style="font-size: 11px; font-weight: 500; color: var(--accent)">+0.1</span></div>
+                  </div>
+                  <div class="param-badge pb-safe" style="margin: 0"><span class="ms" style="font-size: 10px; color: var(--safe-ic)">check_circle</span>Stable</div>
+                </div>
+                <div style="position: relative; height: 160px"><canvas id="cPh"></canvas></div>
+              </div>
+              <div class="card" style="margin-bottom: 12px">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--t2)">TDS / Nutrient</div>
+                    <div style="font-size: 20px; font-weight: 800; color: var(--t1)">950 <span style="font-size: 11px; font-weight: 500; color: var(--accent)">ppm</span></div>
+                  </div>
+                  <div class="param-badge pb-safe" style="margin: 0"><span class="ms" style="font-size: 10px; color: var(--safe-ic)">check_circle</span>Optimal</div>
+                </div>
+                <div style="position: relative; height: 160px"><canvas id="cTds"></canvas></div>
+              </div>
+              <div class="card" style="margin-bottom: 12px">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--t2)">Water Temperature</div>
+                    <div style="font-size: 20px; font-weight: 800; color: var(--t1)">24 <span style="font-size: 11px; font-weight: 500; color: var(--warn-ic)">°C</span></div>
+                  </div>
+                  <div class="param-badge pb-warn" style="margin: 0"><span class="ms" style="font-size: 10px; color: var(--warn-ic)">warning</span>Slight High</div>
+                </div>
+                <div style="position: relative; height: 160px"><canvas id="cTemp"></canvas></div>
+              </div>
+              <div class="card" style="margin-bottom: 12px">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px">
+                  <div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--t2)">Air Humidity</div>
+                    <div style="font-size: 20px; font-weight: 800; color: var(--t1)">72 <span style="font-size: 11px; font-weight: 500; color: var(--accent)">%</span></div>
+                  </div>
+                  <div class="param-badge pb-safe" style="margin: 0"><span class="ms" style="font-size: 10px; color: var(--safe-ic)">check_circle</span>Good</div>
+                </div>
+                <div style="position: relative; height: 160px"><canvas id="cHum"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTROLS with hints -->
+        <div class="scr" id="s-controls">
+          <div style="padding: 52px 20px 120px; max-width: 1200px; margin: 0 auto">
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--t1); margin-bottom: 4px" class="h1-resp">Controls</h1>
+            <p style="font-size: 12px; color: var(--t2); margin-bottom: 18px">
+              Manage your hydroponic equipment. <em style="font-size: 11px; color: var(--t3)">Aktifkan fitur otomatis supaya tanaman lebih aman saat kamu tidak memantau aplikasi.</em>
+            </p>
+            <div class="controls-grid">
+              <div class="card" style="padding: 0">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer" onclick="openCtrl('Water Pump', this)">
+                  <div style="display: flex; align-items: center; gap: 14px">
+                    <div style="width: 44px; height: 44px; border-radius: 13px; background: #e3f2fd; display: flex; align-items: center; justify-content: center">
+                      <span class="ms" style="color: #1565c0; font-size: 22px">water_pump</span>
+                    </div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Water Pump</div>
+                      <div style="font-size: 11px; color: var(--t2)">Main circulation</div>
+                      <div class="ctrl-hint">Mengalirkan air dan nutrisi ke akar tanaman.</div>
+                    </div>
+                  </div>
+                  <div class="tgl on" id="t-pump"></div>
+                </div>
+                <div style="height: 1px; background: var(--bdr); margin: 0 18px"></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer" onclick="openCtrl('Nutrient Pump', this)">
+                  <div style="display: flex; align-items: center; gap: 14px">
+                    <div style="width: 44px; height: 44px; border-radius: 13px; background: var(--accentL); display: flex; align-items: center; justify-content: center">
+                      <span class="ms" style="color: var(--accent); font-size: 22px">compost</span>
+                    </div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Nutrient Pump</div>
+                      <div style="font-size: 11px; color: var(--t2)">A/B nutrient dosing</div>
+                      <div class="ctrl-hint">Menambahkan nutrisi secara otomatis saat level turun.</div>
+                    </div>
+                  </div>
+                  <div class="tgl" id="t-nutrient"></div>
+                </div>
+                <div style="height: 1px; background: var(--bdr); margin: 0 18px"></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer" onclick="openCtrl('Cooling Fan', this)">
+                  <div style="display: flex; align-items: center; gap: 14px">
+                    <div style="width: 44px; height: 44px; border-radius: 13px; background: #fff8e1; display: flex; align-items: center; justify-content: center"><span class="ms" style="color: #e65100; font-size: 22px">mode_fan</span></div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Cooling Fan</div>
+                      <div style="font-size: 11px; color: var(--t2)">Temperature regulation</div>
+                      <div class="ctrl-hint">Menjaga suhu air tetap aman untuk akar tanaman.</div>
+                    </div>
+                  </div>
+                  <div class="tgl" id="t-fan"></div>
+                </div>
+                <div style="height: 1px; background: var(--bdr); margin: 0 18px"></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; cursor: pointer" onclick="openCtrl('Grow Light', this)">
+                  <div style="display: flex; align-items: center; gap: 14px">
+                    <div style="width: 44px; height: 44px; border-radius: 13px; background: #fff8e1; display: flex; align-items: center; justify-content: center">
+                      <span class="ms" style="color: #f9a825; font-size: 22px">light_mode</span>
+                    </div>
+                    <div>
+                      <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Grow Light</div>
+                      <div style="font-size: 11px; color: var(--t2)">Full spectrum LED</div>
+                      <div class="ctrl-hint">Memberikan cahaya untuk fotosintesis tanaman.</div>
+                    </div>
+                  </div>
+                  <div class="tgl on" id="t-light"></div>
+                </div>
+              </div>
+              <div>
+                <h3 style="font-size: 15px; font-weight: 700; color: var(--t1); margin-bottom: 10px">Active Schedules</h3>
+                <div class="card" style="margin-bottom: 10px; display: flex; align-items: center; gap: 12px">
+                  <div style="width: 38px; height: 38px; border-radius: 11px; background: #e3f2fd; display: flex; align-items: center; justify-content: center"><span class="ms" style="color: #1565c0; font-size: 18px">schedule</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Water Pump Cycle</div>
+                    <div style="font-size: 11px; color: var(--t2)">Every 2h for 15 min</div>
+                  </div>
+                  <div class="tgl on" onclick="this.classList.toggle('on')"></div>
+                </div>
+                <div class="card" style="display: flex; align-items: center; gap: 12px">
+                  <div style="width: 38px; height: 38px; border-radius: 11px; background: #fff8e1; display: flex; align-items: center; justify-content: center"><span class="ms" style="color: #f9a825; font-size: 18px">schedule</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Grow Light Timer</div>
+                    <div style="font-size: 11px; color: var(--t2)">16h on / 8h off</div>
+                  </div>
+                  <div class="tgl on" onclick="this.classList.toggle('on')"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS with actionable fixes -->
+        <div class="scr" id="s-notif">
+          <div style="padding: 52px 20px 120px; max-width: 1200px; margin: 0 auto">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px">
+              <h1 style="font-size: 22px; font-weight: 800; color: var(--t1)" class="h1-resp">Alerts</h1>
+              <span style="font-size: 12px; font-weight: 600; color: var(--accent); cursor: pointer" onclick="clearNotifs()">Mark all read</span>
+            </div>
+            <div class="notif-grid">
+              <div>
+                <p style="font-size: 11px; font-weight: 700; color: var(--crit-t); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px">Critical</p>
+                <div class="ncard" style="border-left: 3px solid #f44336">
+                  <div class="nicon" style="background: #f44336"><span class="ms" style="font-size: 16px">emergency</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Water Temp Critical</div>
+                    <div style="font-size: 11px; color: var(--t2); line-height: 1.4; margin-top: 2px">Water temp reached 28.3°C. This may stress plant roots.</div>
+                    <div class="nfix nfix-crit">
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #f44336">arrow_forward</span><span>Go to <b>Controls → Cooling Fan</b> and turn ON.</span>
+                      </div>
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #f44336">arrow_forward</span><span>Or enable <b>Auto Cooling</b> on Dashboard.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size: 10px; color: var(--t3); white-space: nowrap">5m</div>
+                </div>
+                <div class="ncard" style="border-left: 3px solid #f44336">
+                  <div class="nicon" style="background: #f44336"><span class="ms" style="font-size: 16px">link_off</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Pump Offline</div>
+                    <div style="font-size: 11px; color: var(--t2); line-height: 1.4; margin-top: 2px">Water pump lost connection. Plants are not receiving water.</div>
+                    <div class="nfix nfix-crit">
+                      <div class="nfix-step"><span class="ms" style="color: #f44336">arrow_forward</span><span>Check pump power cable and reconnect.</span></div>
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #f44336">arrow_forward</span><span>Go to <b>Controls → Water Pump</b> to restart.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size: 10px; color: var(--t3); white-space: nowrap">12m</div>
+                </div>
+              </div>
+              <div>
+                <p style="font-size: 11px; font-weight: 700; color: var(--warn-t); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px">Warning</p>
+                <div class="ncard" style="border-left: 3px solid #ff9800">
+                  <div class="nicon" style="background: #ff9800"><span class="ms" style="font-size: 16px">science</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">pH Too High</div>
+                    <div style="font-size: 11px; color: var(--t2); line-height: 1.4; margin-top: 2px">pH at 7.2. Lettuce absorbs nutrients best at 5.5–6.5.</div>
+                    <div class="nfix nfix-warn">
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #d97706">arrow_forward</span><span>Go to <b>Controls → Nutrient Pump</b> and activate dosing.</span>
+                      </div>
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #d97700">arrow_forward</span><span>Or enable <b>Auto Nutrient Adjustment</b> on Dashboard.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size: 10px; color: var(--t3); white-space: nowrap">1h</div>
+                </div>
+                <div class="ncard" style="border-left: 3px solid #ff9800">
+                  <div class="nicon" style="background: #ff9800"><span class="ms" style="font-size: 16px">grain</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">Nutrient Deficiency</div>
+                    <div style="font-size: 11px; color: var(--t2); line-height: 1.4; margin-top: 2px">TDS dropped to 420 ppm. Plant growth may slow down.</div>
+                    <div class="nfix nfix-warn">
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #d97706">arrow_forward</span><span>Go to <b>Controls → Nutrient Pump</b> and activate dosing.</span>
+                      </div>
+                      <div class="nfix-step">
+                        <span class="ms" style="color: #d97700">arrow_forward</span><span>Or enable <b>Auto Nutrient</b> on Dashboard.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="font-size: 10px; color: var(--t3); white-space: nowrap">3h</div>
+                </div>
+                <p style="font-size: 11px; font-weight: 700; color: var(--safe-t); text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 8px">Resolved</p>
+                <div class="ncard" style="border-left: 3px solid #4caf50; opacity: 0.6">
+                  <div class="nicon" style="background: #4caf50"><span class="ms" style="font-size: 16px">check_circle</span></div>
+                  <div style="flex: 1">
+                    <div style="font-size: 13px; font-weight: 700; color: var(--t1)">pH Normalized</div>
+                    <div style="font-size: 11px; color: var(--t2); line-height: 1.4; margin-top: 2px">pH returned to 6.2 after auto-correction.</div>
+                  </div>
+                  <div style="font-size: 10px; color: var(--t3); white-space: nowrap">6h</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFILE -->
+        <div class="scr" id="s-profile">
+          <div style="padding: 52px 20px 120px; max-width: 800px; margin: 0 auto">
+            <h1 style="font-size: 22px; font-weight: 800; color: var(--t1); margin-bottom: 18px" class="h1-resp">Profile</h1>
+            <div class="card" style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px">
+              <div style="width: 54px; height: 54px; border-radius: 16px; overflow: hidden; flex-shrink: 0"><img src="https://picsum.photos/seed/alex42/108/108.jpg" style="width: 100%; height: 100%; object-fit: cover" alt="Avatar" /></div>
+              <div style="flex: 1">
+                <div style="font-size: 17px; font-weight: 800; color: var(--t1)">User</div>
+                <div style="font-size: 12px; color: var(--t2)">user@MySelada.io</div>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px">
+              <div class="card" style="text-align: center; padding: 12px">
+                <div style="font-size: 20px; font-weight: 800; color: var(--accent)">3</div>
+                <div style="font-size: 10px; color: var(--t2)">Devices</div>
+              </div>
+              <div class="card" style="text-align: center; padding: 12px">
+                <div style="font-size: 20px; font-weight: 800; color: var(--accent)">12</div>
+                <div style="font-size: 10px; color: var(--t2)">Batches</div>
+              </div>
+              <div class="card" style="text-align: center; padding: 12px">
+                <div style="font-size: 20px; font-weight: 800; color: var(--accent)">94%</div>
+                <div style="font-size: 10px; color: var(--t2)">Success</div>
+              </div>
+            </div>
+            <div class="card" style="margin-bottom: 12px; padding: 0">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer" onclick="nav('security')">
+                <span class="ms" style="color: var(--accent); font-size: 20px">shield</span><span style="flex: 1; font-size: 13px; font-weight: 600; color: var(--t1)">Security &amp; Privacy</span
+                ><span class="ms mso" style="color: var(--t3); font-size: 16px">chevron_right</span>
+              </div>
+              <div style="height: 1px; background: var(--bdr); margin: 0 16px"></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer" onclick="nav('notifications')">
+                <span class="ms" style="color: var(--accent); font-size: 20px">notifications</span><span style="flex: 1; font-size: 13px; font-weight: 600; color: var(--t1)">Notifications</span
+                ><span class="ms mso" style="color: var(--t3); font-size: 16px">chevron_right</span>
+              </div>
+              <div style="height: 1px; background: var(--bdr); margin: 0 16px"></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer" onclick="toggleTheme()">
+                <span class="ms" style="color: var(--accent); font-size: 20px">dark_mode</span><span style="flex: 1; font-size: 13px; font-weight: 600; color: var(--t1)">Dark Mode</span>
+                <div
+                  class="tgl"
+                  id="themeTgl"
+                  onclick="
+                    event.stopPropagation();
+                    toggleTheme();
+                  "></div>
+              </div>
+              <div style="height: 1px; background: var(--bdr); margin: 0 16px"></div>
+              <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer">
+                <span class="ms" style="color: var(--accent); font-size: 20px">help</span><span style="flex: 1; font-size: 13px; font-weight: 600; color: var(--t1)">Help &amp; Support</span
+                ><span class="ms mso" style="color: var(--t3); font-size: 16px">chevron_right</span>
+              </div>
+            </div>
+            <button
+              class="btn2"
+              style="color: #f44336; border-color: #ffcdd2"
+              onclick="
+                go('s-welcome');
+                hideNav();
+              ">
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- SECURITY with hints -->
+        <div class="scr" id="s-security">
+          <div style="padding: 52px 20px 120px; max-width: 600px; margin: 0 auto">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px">
+              <span class="ms mso" style="font-size: 20px; color: var(--t1); cursor: pointer" onclick="nav('profile')">arrow_back</span>
+              <h1 style="font-size: 22px; font-weight: 800; color: var(--t1)" class="h1-resp">Security</h1>
+            </div>
+            <p style="font-size: 13px; color: var(--t2); margin-bottom: 6px; line-height: 1.6">Protect device controls with biometric authentication.</p>
+            <p style="font-size: 11px; color: var(--t3); font-style: italic; margin-bottom: 20px">Agar tidak sembarang orang bisa mengontrol perangkat hidroponikmu.</p>
+            <div class="sec-opt" onclick="secToggle()">
+              <div class="sec-ic" style="background: #e3f2fd"><span class="ms" style="color: #1565c0; font-size: 24px">dialpad</span></div>
+              <div style="flex: 1">
+                <div style="font-size: 14px; font-weight: 700; color: var(--t1)">PIN Verification</div>
+                <div style="font-size: 11px; color: var(--t2)">4-digit PIN</div>
+              </div>
+              <div
+                class="tgl on"
+                onclick="
+                  event.stopPropagation();
+                  this.classList.toggle('on');
+                "></div>
+            </div>
+            <div class="sec-opt" onclick="secToggle()">
+              <div class="sec-ic" style="background: var(--accentL)"><span class="ms" style="color: var(--accent); font-size: 24px">fingerprint</span></div>
+              <div style="flex: 1">
+                <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Fingerprint</div>
+                <div style="font-size: 11px; color: var(--t2)">Biometric scan</div>
+              </div>
+              <div
+                class="tgl"
+                onclick="
+                  event.stopPropagation();
+                  this.classList.toggle('on');
+                "></div>
+            </div>
+            <div class="sec-opt" onclick="secToggle()">
+              <div class="sec-ic" style="background: #ede7f6"><span class="ms" style="color: #4527a0; font-size: 24px">face</span></div>
+              <div style="flex: 1">
+                <div style="font-size: 14px; font-weight: 700; color: var(--t1)">Face ID</div>
+                <div style="font-size: 11px; color: var(--t2)">Facial recognition</div>
+              </div>
+              <div
+                class="tgl"
+                onclick="
+                  event.stopPropagation();
+                  this.classList.toggle('on');
+                "></div>
+            </div>
+            <div style="text-align: center; margin-top: 28px">
+              <div
+                style="width: 110px; height: 110px; border-radius: 50%; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; border: 2px solid var(--accent)"
+                class="apulse"
+                id="fpVis"
+                onclick="verifyFP()">
+                <span class="ms" style="font-size: 52px; color: var(--accent)">fingerprint</span>
+              </div>
+              <p style="font-size: 13px; font-weight: 600; color: var(--t1)" id="fpText">Tap to verify identity</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- SENSOR DETAIL -->
+        <div class="scr" id="s-sensor">
+          <div style="padding: 52px 20px 120px; max-width: 600px; margin: 0 auto">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 18px">
+              <span class="ms mso" style="font-size: 20px; color: var(--t1); cursor: pointer" onclick="nav('dashboard')">arrow_back</span>
+              <h1 style="font-size: 22px; font-weight: 800; color: var(--t1)" id="sdTitle" class="h1-resp">Sensor Detail</h1>
+            </div>
+            <div class="card" style="text-align: center; margin-bottom: 16px; padding: 28px">
+              <div id="sdIcon" style="width: 64px; height: 64px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px">
+                <span class="ms" style="font-size: 32px" id="sdIconMs">science</span>
+              </div>
+              <div style="font-size: 42px; font-weight: 800; color: var(--t1)" id="sdVal">6.2</div>
+              <div style="font-size: 13px; color: var(--t2); margin-top: 4px" id="sdSub">Water pH Level</div>
+              <div class="param-badge pb-safe" style="margin-top: 10px; display: inline-flex" id="sdBadge"><span class="ms" style="font-size: 11px; color: var(--safe-ic)">check_circle</span>Safe</div>
+              <div style="font-size: 12px; color: var(--t3); font-style: italic; margin-top: 8px" id="sdTip">Nilai ini sudah pas untuk pertumbuhan tanaman.</div>
+            </div>
+            <div class="card" style="margin-bottom: 14px; position: relative; height: 200px"><canvas id="cDetail"></canvas></div>
+            <div class="card" style="padding: 16px">
+              <div style="font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 10px">Safe Range</div>
+              <div style="height: 8px; border-radius: 4px; background: linear-gradient(90deg, #f44336 0%, #4caf50 30%, #4caf50 70%, #f44336 100%); position: relative">
+                <div style="position: absolute; top: -4px; width: 16px; height: 16px; border-radius: 50%; background: var(--t1); border: 3px solid var(--card); transform: translateX(-50%); left: 50%" id="sdMarker"></div>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--t3)"><span id="sdMin">0</span><span id="sdMax">14</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /screens -->
+
+      <!-- Bottom Navigation — 4 items, no FAB -->
+      <div class="bnav-wrap" id="bnavWrap">
+        <div class="bnav" id="bnav">
+          <div class="ni on" data-t="dashboard" onclick="nav('dashboard')"><span class="ms">home</span><span class="nl">Home</span></div>
+          <div class="ni" data-t="analytics" onclick="nav('analytics')"><span class="ms">bar_chart</span><span class="nl">Data</span></div>
+          <div class="ni" data-t="controls" onclick="nav('controls')"><span class="ms">tune</span><span class="nl">Control</span></div>
+          <div class="ni" data-t="profile" onclick="nav('profile')"><span class="ms">person</span><span class="nl">Account</span></div>
+        </div>
+      </div>
+
+      <!-- Modal -->
+      <div class="modal-bg" id="modal">
+        <div class="modal-c">
+          <div style="width: 52px; height: 52px; border-radius: 16px; background: var(--accentL); display: flex; align-items: center; justify-content: center; margin: 0 auto 14px">
+            <span class="ms" style="color: var(--accent); font-size: 26px" id="mIcon">power_settings_new</span>
+          </div>
+          <div style="font-size: 17px; font-weight: 800; color: var(--t1); text-align: center; margin-bottom: 6px" id="mTitle">Turn On Device?</div>
+          <div style="font-size: 13px; color: var(--t2); text-align: center; line-height: 1.6; margin-bottom: 22px" id="mDesc">Are you sure?</div>
+          <div style="display: flex; gap: 10px"><button class="btn2" style="flex: 1" onclick="closeMod()">Cancel</button><button class="btn1" style="flex: 1; box-shadow: none" onclick="confirmMod()">Confirm</button></div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="toast toast-ok" id="toast"><span class="ms" style="font-size: 16px">check_circle</span><span id="toastTxt">Done</span></div>
+    </div>
+    <!-- /app -->
+
+    <script>
+      const S = {
+        screen: 's-welcome',
+        tab: 'dashboard',
+        onboard: false,
+        pendingCtrl: null,
+        charts: {},
+        chartsReady: false,
+        detailChart: null,
+        autoMode: true,
+        sensors: {
+          ph: {
+            val: 6.2,
+            safe: [5.5, 6.5],
+            unit: '',
+            icon: 'science',
+            color: '#2E7D32',
+            bg: 'var(--accentL)',
+            label: 'pH Level',
+            totalMin: 0,
+            totalMax: 14,
+            hints: { safe: 'Ideal for lettuce growth', warn: 'pH outside optimal range', crit: 'pH level is dangerous' },
+            tips: { safe: 'Nilai ini sudah pas untuk pertumbuhan tanaman.', warn: 'pH kurang cocok untuk tanaman saat ini.', crit: 'pH bahaya! Perlu ditangani segera.' },
+          },
+          tds: {
+            val: 950,
+            safe: [600, 1200],
+            unit: 'ppm',
+            icon: 'grain',
+            color: '#E65100',
+            bg: '#FFF8E1',
+            label: 'TDS / Nutrient',
+            totalMin: 0,
+            totalMax: 2000,
+            hints: { safe: 'Nutrient concentration optimal', warn: 'Nutrient level slightly off', crit: 'Nutrient level critical' },
+            tips: { safe: 'Nutrisi tanaman masih aman.', warn: 'Nutrisi mulai berkurang, cek tangki nutrisi beberapa jam ke depan.', crit: 'Nutrisi terlalu rendah! Tanaman butuh nutrisi segera.' },
+          },
+          temp: {
+            val: 24,
+            safe: [18, 25],
+            unit: '°C',
+            icon: 'thermostat',
+            color: '#1565C0',
+            bg: '#E3F2FD',
+            label: 'Water Temperature',
+            totalMin: 0,
+            totalMax: 40,
+            hints: { safe: 'Safe for healthy root growth', warn: 'Temperature slightly high', crit: 'Temperature too high — risk of root rot' },
+            tips: { safe: 'Suhu air masih aman.', warn: 'Suhu mulai naik, sebaiknya aktifkan pendingin.', crit: 'Suhu terlalu panas! Akar tanaman bisa rusak.' },
+          },
+          hum: {
+            val: 72,
+            safe: [50, 80],
+            unit: '%',
+            icon: 'humidity_percentage',
+            color: '#4527A0',
+            bg: '#EDE7F6',
+            label: 'Humidity',
+            totalMin: 0,
+            totalMax: 100,
+            hints: { safe: 'Suitable growing environment', warn: 'Humidity slightly off', crit: 'Humidity level critical' },
+            tips: { safe: 'Kondisi udara masih nyaman untuk tanaman.', warn: 'Kelembaban kurang pas, tapi masih aman.', crit: 'Kelembaban terlalu ekstrem!' },
+          },
+        },
+        healthScore: 92,
+        updateTimer: null,
+      };
+
+      function go(id) {
+        const cur = document.querySelector('.scr.on'),
+          nxt = document.getElementById(id);
+        if (!nxt || cur === nxt) return;
+        cur.classList.remove('on');
+        cur.classList.add('out');
+        setTimeout(() => cur.classList.remove('out'), 350);
+        nxt.classList.add('on');
+        S.screen = id;
+        nxt.scrollTop = 0;
+      }
+      function enterDash() {
+        S.onboard = true;
+        go('s-dash');
+        showNav();
+        setTimeout(() => {
+          animHarvest();
+          animHealth();
+        }, 400);
+        startLiveUpdates();
+      }
+      function showNav() {
+        document.getElementById('bnavWrap').classList.add('show');
+      }
+      function hideNav() {
+        document.getElementById('bnavWrap').classList.remove('show');
+      }
+
+      function nav(tab) {
+        const map = { dashboard: 's-dash', analytics: 's-analytics', controls: 's-controls', notifications: 's-notif', profile: 's-profile', security: 's-security', sensor: 's-sensor' };
+        if (!map[tab]) return;
+        go(map[tab]);
+        if (['dashboard', 'analytics', 'controls', 'profile'].includes(tab)) {
+          S.tab = tab;
+          document.querySelectorAll('.ni').forEach((n) => n.classList.toggle('on', n.dataset.t === tab));
+        }
+        if (tab === 'analytics' && !S.chartsReady) {
+          setTimeout(initCharts, 350);
+          S.chartsReady = true;
+        }
+      }
+
+      function animHarvest() {
+        const bar = document.getElementById('harvestBarFill');
+        const pct = document.getElementById('hPct2');
+        if (bar) bar.style.width = '60%';
+        if (pct) pct.textContent = '60%';
+      }
+
+      function animHealth() {
+        const ring = document.getElementById('healthRing');
+        const valEl = document.getElementById('healthVal');
+        if (!ring) return;
+        const score = S.healthScore,
+          c = 276,
+          off = c - (c * score) / 100;
+        ring.style.strokeDashoffset = off;
+        let cur = 0;
+        const iv = setInterval(() => {
+          cur += 2;
+          if (cur >= score) {
+            cur = score;
+            clearInterval(iv);
+          }
+          if (valEl) valEl.textContent = cur;
+        }, 20);
+        const lbl = document.getElementById('healthLabel');
+        const badge = document.getElementById('healthBadge');
+        if (score >= 80) {
+          ring.style.stroke = '#2E7D32';
+          if (lbl) lbl.textContent = 'Excellent';
+          if (badge) {
+            badge.style.background = 'var(--accentL)';
+            badge.style.color = 'var(--accent2)';
+          }
+        } else if (score >= 60) {
+          ring.style.stroke = '#FF9800';
+          if (lbl) lbl.textContent = 'Good';
+          if (badge) {
+            badge.style.background = 'var(--warn-bg)';
+            badge.style.color = 'var(--warn-t)';
+          }
+        } else {
+          ring.style.stroke = '#F44336';
+          if (lbl) lbl.textContent = 'Needs Attention';
+          if (badge) {
+            badge.style.background = 'var(--crit-bg)';
+            badge.style.color = 'var(--crit-t)';
+          }
+        }
+      }
+
+      /* Plant Status Logic */
+      function getPlantStatus() {
+        const s = S.sensors;
+        let worst = 'healthy';
+        let reason = '';
+        let action = '';
+        const checks = [
+          { key: 'temp', val: s.temp.val, safe: s.temp.safe, name: 'Water temperature' },
+          { key: 'ph', val: s.ph.val, safe: s.ph.safe, name: 'pH level' },
+          { key: 'tds', val: s.tds.val, safe: s.tds.safe, name: 'Nutrient concentration' },
+          { key: 'hum', val: s.hum.val, safe: s.hum.safe, name: 'Humidity' },
+        ];
+        for (const c of checks) {
+          const lo = c.safe[0],
+            hi = c.safe[1];
+          if (c.val < lo * 0.85 || c.val > hi * 1.15) {
+            worst = 'critical';
+            reason = c.name + (c.val < lo ? ' is dangerously low' : ' is dangerously high');
+            if (c.key === 'temp') action = 'Go to Controls → Cooling Fan and turn ON, or enable Auto Cooling on Dashboard.';
+            else if (c.key === 'ph') action = 'Go to Controls → Nutrient Pump to dose pH adjuster, or enable Auto Nutrient on Dashboard.';
+            else if (c.key === 'tds') action = 'Go to Controls → Nutrient Pump and activate dosing, or enable Auto Nutrient Adjustment on Dashboard.';
+            else action = 'Check your ventilation system and adjust environment controls.';
+            break;
+          }
+          if (c.val < lo || c.val > hi) {
+            if (worst !== 'critical') {
+              worst = 'attention';
+              reason = c.name + (c.val < lo ? ' is starting to decrease' : ' is slightly high');
+              if (c.key === 'temp') action = 'Cek tangki nutrisi dalam beberapa jam ke depan. Consider enabling Auto Cooling.';
+              else if (c.key === 'ph') action = 'pH mulai bergeser. Aktifkan Auto Nutrient Adjustment biar otomatis.';
+              else if (c.key === 'tds') action = 'Nutrisi mulai berkurang. Cek tangki nutrisi dalam beberapa jam ke depan.';
+              else action = 'Kelembaban sedang berubah. Pantau kondisi lingkungan.';
+            }
+          }
+        }
+        if (worst === 'healthy') {
+          reason = 'All conditions are ideal for growth.';
+          action = 'Tanaman kamu lagi sehat nih.';
+        } else if (worst === 'attention' && !action) {
+          action = 'Cek kondisi tanaman secara berkala.';
+        } else if (worst === 'critical' && !action) {
+          action = 'Segera ambil tindakan!';
+          reason = 'Kondisi tanaman dalam bahaya.';
+        }
+        return { status: worst, reason, action };
+      }
+
+      function updatePlantStatusCard() {
+        const { status, reason, action } = getPlantStatus();
+        const card = document.getElementById('plantStatusCard');
+        const pulse = document.getElementById('plantStatusPulse');
+        const icon = document.getElementById('plantStatusIcon');
+        const icMs = document.getElementById('plantStatusIcMs');
+        const label = document.getElementById('plantStatusLabel');
+        const title = document.getElementById('plantStatusTitle');
+        const desc = document.getElementById('plantStatusDesc');
+        const actEl = document.getElementById('plantStatusAction');
+        const tipEl = document.getElementById('plantStatusTip');
+        if (!card) return;
+
+        card.className = 'plant-status-card status-' + status;
+        if (status === 'healthy') {
+          pulse.style.background = '#4CAF50';
+          icon.style.background = '#4CAF50';
+          icMs.textContent = 'eco';
+          label.style.color = '#1B5E20';
+          title.style.color = '#1B5E20';
+          desc.style.color = '#2E7D32';
+          title.textContent = 'Healthy';
+          label.textContent = 'Plant Status';
+        } else if (status === 'attention') {
+          pulse.style.background = '#FF9800';
+          icon.style.background = '#FF9800';
+          icMs.textContent = 'warning';
+          label.style.color = '#E65100';
+          title.style.color = '#E65100';
+          desc.style.color = '#BF360C';
+          title.textContent = 'Needs Attention';
+          label.textContent = 'Plant Status';
+        } else {
+          pulse.style.background = '#F44336';
+          icon.style.background = '#F44336';
+          icMs.textContent = 'emergency';
+          label.style.color = '#B71C1C';
+          title.style.color = '#B71C1C';
+          desc.style.color = '#C62828';
+          title.textContent = 'Critical Alert';
+          label.textContent = 'Plant Status';
+        }
+        desc.textContent = reason;
+        tipEl.textContent = action;
+        if (actEl) actEl.className = 'status-action';
+      }
+
+      function startPair() {
+        go('s-o4');
+        const circle = document.getElementById('pairCircle'),
+          status = document.getElementById('pairStatus'),
+          pctEl = document.getElementById('pairPct');
+        setTimeout(() => {
+          if (circle) circle.style.strokeDashoffset = '0';
+        }, 200);
+        let p = 0;
+        const iv = setInterval(() => {
+          p += 2;
+          if (p > 100) p = 100;
+          if (pctEl) pctEl.textContent = p + '%';
+          if (p === 30 && status) status.textContent = 'Device found! Connecting...';
+          if (p === 65 && status) status.textContent = 'Detecting sensors automatically...';
+          if (p === 90 && status) status.textContent = 'Almost done...';
+          if (p === 100) {
+            clearInterval(iv);
+            if (status) status.textContent = 'Connected! All sensors detected.';
+            setTimeout(() => go('s-o5'), 500);
+          }
+        }, 55);
+      }
+
+      function startLiveUpdates() {
+        if (S.updateTimer) return;
+        let tick = 0;
+        S.updateTimer = setInterval(() => {
+          tick++;
+          const s = S.sensors;
+          s.ph.val = clamp(s.ph.val + (Math.random() - 0.5) * 0.06, 4, 9);
+          s.tds.val = clamp(s.tds.val + (Math.random() - 0.48) * 15, 200, 1800);
+          s.temp.val = clamp(s.temp.val + (Math.random() - 0.5) * 0.4, 10, 35);
+          s.hum.val = clamp(s.hum.val + (Math.random() - 0.5) * 1.5, 30, 95);
+          updateDashSensors();
+          updatePlantStatusCard();
+          S.healthScore = calcHealth();
+          const hv = document.getElementById('healthVal');
+          if (hv) hv.textContent = S.healthScore;
+          const lu = document.getElementById('lastUpdate');
+          if (lu) lu.textContent = 'Updated ' + ((tick % 5) + 1) + 's ago';
+          if (tick % 30 === 0 && s.temp.val > 26) showToast('Water temperature above safe range!', 'warn');
+        }, 3000);
+      }
+
+      function calcHealth() {
+        const s = S.sensors;
+        let score = 100;
+        score -= Math.abs(s.ph.val - (s.ph.safe[0] + s.ph.safe[1]) / 2) * 8;
+        if (s.temp.val > 25) score -= (s.temp.val - 25) * 6;
+        else if (s.temp.val < 18) score -= (18 - s.temp.val) * 6;
+        score -= Math.abs(s.tds.val - (s.tds.safe[0] + s.tds.safe[1]) / 2) * 0.01;
+        score -= Math.abs(s.hum.val - (s.hum.safe[0] + s.hum.safe[1]) / 2) * 0.3;
+        return Math.max(0, Math.min(100, Math.round(score)));
+      }
+
+      function clamp(v, min, max) {
+        return Math.max(min, Math.min(max, v));
+      }
+
+      function setPBadge(id, val, safe) {
+        const e = document.getElementById(id);
+        if (!e) return;
+        const lo = safe[0],
+          hi = safe[1];
+        let cls, txt, ic;
+        if (val >= lo && val <= hi) {
+          cls = 'pb-safe';
+          txt = 'Safe';
+          ic = 'check_circle';
+        } else if (val >= lo * 0.85 && val <= hi * 1.15) {
+          cls = 'pb-warn';
+          txt = 'Warning';
+          ic = 'warning';
+        } else {
+          cls = 'pb-crit';
+          txt = 'Critical';
+          ic = 'error';
+        }
+        e.className = 'param-badge ' + cls;
+        const icColor = cls === 'pb-safe' ? 'var(--safe-ic)' : cls === 'pb-warn' ? 'var(--warn-ic)' : 'var(--crit-ic)';
+        e.innerHTML = '<span class="ms" style="font-size:11px;color:' + icColor + '">' + ic + '</span>' + txt;
+      }
+
+      function setHint(id, val, safe, hints) {
+        const e = document.getElementById(id);
+        if (!e) return;
+        const lo = safe[0],
+          hi = safe[1];
+        let cls, txt;
+        if (val >= lo && val <= hi) {
+          cls = 'hint-safe';
+          txt = hints.safe;
+        } else if (val >= lo * 0.85 && val <= hi * 1.15) {
+          cls = 'hint-warn';
+          txt = hints.warn;
+        } else {
+          cls = 'hint-crit';
+          txt = hints.crit;
+        }
+        e.className = 'param-hint ' + cls;
+        e.innerHTML = '<span class="ms">' + (cls === 'hint-safe' ? 'check_circle' : cls === 'hint-warn' ? 'warning' : 'error') + '</span>' + txt;
+      }
+
+      function setTip(id, val, safe, tips) {
+        const e = document.getElementById(id);
+        if (!e) return;
+        const lo = safe[0],
+          hi = safe[1];
+        if (val >= lo && val <= hi) e.textContent = tips.safe;
+        else if (val >= lo * 0.85 && val <= hi * 1.15) e.textContent = tips.warn;
+        else e.textContent = tips.crit;
+      }
+
+      function updateDashSensors() {
+        const s = S.sensors;
+        const vPh = document.getElementById('vPh2');
+        if (vPh) vPh.textContent = s.ph.val.toFixed(1);
+        setPBadge('bPh2', s.ph.val, s.ph.safe);
+        setHint('hintPh', s.ph.val, s.ph.safe, s.ph.hints);
+        setTip('tipPh', s.ph.val, s.ph.safe, s.ph.tips);
+        const vTds = document.getElementById('vTds2');
+        if (vTds) vTds.textContent = Math.round(s.tds.val);
+        setPBadge('bTds2', s.tds.val, s.tds.safe);
+        setHint('hintTds', s.tds.val, s.tds.safe, s.tds.hints);
+        setTip('tipTds', s.tds.val, s.tds.safe, s.tds.tips);
+        const vTemp = document.getElementById('vTemp2');
+        if (vTemp) vTemp.textContent = Math.round(s.temp.val);
+        setPBadge('bTemp2', s.temp.val, s.temp.safe);
+        setHint('hintTemp', s.temp.val, s.temp.safe, s.temp.hints);
+        setTip('tipTemp', s.temp.val, s.temp.safe, s.temp.tips);
+        const vHum = document.getElementById('vHum2');
+        if (vHum) vHum.textContent = Math.round(s.hum.val);
+        setPBadge('bHum2', s.hum.val, s.hum.safe);
+        setHint('hintHum', s.hum.val, s.hum.safe, s.hum.hints);
+        setTip('tipHum', s.hum.val, s.hum.safe, s.hum.tips);
+      }
+
+      function toggleAutoMode() {
+        const tgl = document.getElementById('autoModeTgl');
+        if (!tgl) return;
+        tgl.classList.toggle('on');
+        S.autoMode = tgl.classList.contains('on');
+        const label = document.getElementById('autoModeLabel');
+        const items = document.querySelectorAll('.auto-item');
+        const tip = document.getElementById('autoTip');
+        if (S.autoMode) {
+          if (label) label.textContent = 'Active';
+          items.forEach((i) => i.classList.remove('off'));
+          if (tip) tip.textContent = 'Sistem sedang membantu menjaga tanaman secara otomatis.';
+          showToast('Auto mode enabled — system is managing your farm');
+        } else {
+          if (label) label.textContent = 'Paused';
+          items.forEach((i) => i.classList.add('off'));
+          if (tip) tip.textContent = 'Mode otomatis nonaktif. Kamu perlu mengontrol perangkat manual.';
+          showToast('Auto mode paused — manual control active', 'warn');
+        }
+      }
+
+      function showSensorDetail(type) {
+        const map = { pH: 'ph', TDS: 'tds', Temp: 'temp', Humidity: 'hum' };
+        const key = map[type];
+        if (!key) return;
+        const s = S.sensors[key];
+        const t = document.getElementById('sdTitle');
+        if (t) t.textContent = s.label;
+        const v = document.getElementById('sdVal');
+        if (v) v.textContent = key === 'ph' ? s.val.toFixed(1) : Math.round(s.val);
+        const sub = document.getElementById('sdSub');
+        if (sub) sub.textContent = s.label + (s.unit ? ' (' + s.unit + ')' : '');
+        const ic = document.getElementById('sdIconMs');
+        if (ic) {
+          ic.textContent = s.icon;
+          ic.style.color = s.color;
+        }
+        const ib = document.getElementById('sdIcon');
+        if (ib) ib.style.background = s.bg;
+        setPBadge('sdBadge', s.val, s.safe);
+        const tip = document.getElementById('sdTip');
+        if (tip) {
+          const lo = s.safe[0],
+            hi = s.safe[1];
+          if (s.val >= lo && s.val <= hi) tip.textContent = s.tips.safe;
+          else if (s.val >= lo * 0.85 && s.val <= hi * 1.15) tip.textContent = s.tips.warn;
+          else tip.textContent = s.tips.crit;
+        }
+        const pct = ((s.val - s.totalMin) / (s.totalMax - s.totalMin)) * 100;
+        const marker = document.getElementById('sdMarker');
+        if (marker) marker.style.left = Math.max(5, Math.min(95, pct)) + '%';
+        const mn = document.getElementById('sdMin');
+        if (mn) mn.textContent = s.totalMin + (s.unit ? ' ' + s.unit : '');
+        const mx = document.getElementById('sdMax');
+        if (mx) mx.textContent = s.totalMax + (s.unit ? ' ' + s.unit : '');
+        nav('sensor');
+        setTimeout(() => initDetailChart(key), 350);
+      }
+
+      function initDetailChart(key) {
+        const s = S.sensors[key],
+          ctx = document.getElementById('cDetail');
+        if (!ctx) return;
+        if (S.detailChart) S.detailChart.destroy();
+        const labels = ['6h', '5h', '4h', '3h', '2h', '1h', 'Now'];
+        const data = [];
+        let v = s.val;
+        for (let i = 6; i >= 0; i--) {
+          data.push(+(v + (Math.random() - 0.5) * (s.totalMax - s.totalMin) * 0.08).toFixed(1));
+          v = data[data.length - 1];
+        }
+        data[6] = key === 'ph' ? +s.val.toFixed(1) : Math.round(s.val);
+        S.detailChart = new Chart(ctx, {
+          type: 'line',
+          data: { labels, datasets: [{ data, borderColor: s.color, backgroundColor: s.color + '18', fill: true, tension: 0.4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: s.color }] },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              x: { grid: { color: getTV('--bdr') }, ticks: { color: getTV('--t3'), font: { size: 10, family: 'Plus Jakarta Sans' } } },
+              y: { grid: { color: getTV('--bdr') }, ticks: { color: getTV('--t3'), font: { size: 10, family: 'Plus Jakarta Sans' } } },
+            },
+          },
+        });
+      }
+
+      function getTV(v) {
+        return getComputedStyle(document.documentElement).getPropertyValue(v).trim() || '#999';
+      }
+
+      function openCtrl(name, rowEl) {
+        const tgl = rowEl.querySelector('.tgl'),
+          isOn = tgl.classList.contains('on');
+        S.pendingCtrl = { name, tgl, turnOn: !isOn };
+        const t = document.getElementById('mTitle');
+        if (t) t.textContent = (isOn ? 'Turn Off' : 'Turn On') + ' ' + name + '?';
+        const d = document.getElementById('mDesc');
+        if (d) d.textContent = 'Are you sure you want to ' + (isOn ? 'turn off' : 'turn on') + ' the ' + name + '?';
+        const ic = document.getElementById('mIcon');
+        if (ic) ic.textContent = isOn ? 'power_off' : 'power_settings_new';
+        document.getElementById('modal').classList.add('vis');
+      }
+      function closeMod() {
+        document.getElementById('modal').classList.remove('vis');
+        S.pendingCtrl = null;
+      }
+      function confirmMod() {
+        if (S.pendingCtrl) {
+          const { tgl, turnOn } = S.pendingCtrl;
+          if (turnOn) tgl.classList.add('on');
+          else tgl.classList.remove('on');
+          showToast(S.pendingCtrl.name + (turnOn ? ' activated' : ' deactivated'));
+        }
+        closeMod();
+      }
+
+      function showToast(txt, type = 'ok') {
+        const t = document.getElementById('toast'),
+          tt = document.getElementById('toastTxt');
+        if (t) {
+          t.className = 'toast toast-' + type;
+          if (tt) tt.textContent = txt;
+          t.classList.add('vis');
+          setTimeout(() => t.classList.remove('vis'), 2800);
+        }
+      }
+      function clearNotifs() {
+        document.querySelectorAll('.ncard').forEach((c) => {
+          c.style.opacity = '.4';
+          c.style.transition = 'opacity .3s';
+        });
+        showToast('All alerts marked as read');
+      }
+      function secToggle() {
+        showToast('Security settings updated');
+      }
+      function verifyFP() {
+        const vis = document.getElementById('fpVis'),
+          txt = document.getElementById('fpText');
+        if (vis) vis.style.borderColor = '#FF9800';
+        if (txt) txt.textContent = 'Verifying...';
+        setTimeout(() => {
+          if (vis) {
+            vis.style.borderColor = '#2E7D32';
+            vis.classList.remove('apulse');
+          }
+          if (txt) txt.textContent = 'Identity Verified!';
+          showToast('Fingerprint verified');
+          setTimeout(() => {
+            if (vis) {
+              vis.style.borderColor = 'var(--accent)';
+              vis.classList.add('apulse');
+            }
+            if (txt) txt.textContent = 'Tap to verify identity';
+          }, 3000);
+        }, 1500);
+      }
+
+      function setATab(el) {
+        document.querySelectorAll('#aTabs .tab').forEach((t) => t.classList.remove('on'));
+        el.classList.add('on');
+        Object.values(S.charts).forEach((c) => {
+          if (c && c.data) {
+            c.data.datasets.forEach((ds) => {
+              ds.data = ds.data.map(() => +(Math.random() * 4 + 4).toFixed(1));
+            });
+            c.update('none');
+          }
+        });
+      }
+
+      function initCharts() {
+        const mkData = (base, range, n) => {
+          const d = [];
+          let v = base;
+          for (let i = 0; i < n; i++) {
+            v = clamp(v + (Math.random() - 0.5) * range, base - range * 2, base + range * 2);
+            d.push(+v.toFixed(1));
+          }
+          return d;
+        };
+        const labels24 = ['12a', '2a', '4a', '6a', '8a', '10a', '12p', '2p', '4p', '6p', '8p', '10p'];
+        const mkOpts = () => ({
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { color: getTV('--bdr') }, ticks: { color: getTV('--t3'), font: { size: 10, family: 'Plus Jakarta Sans' } } },
+            y: { grid: { color: getTV('--bdr') }, ticks: { color: getTV('--t3'), font: { size: 10, family: 'Plus Jakarta Sans' } } },
+          },
+        });
+        S.charts.ph = new Chart(document.getElementById('cPh'), {
+          type: 'line',
+          data: { labels: labels24, datasets: [{ data: mkData(6.2, 0.3, 12), borderColor: '#2E7D32', backgroundColor: '#2E7D3218', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }] },
+          options: mkOpts(),
+        });
+        S.charts.tds = new Chart(document.getElementById('cTds'), {
+          type: 'line',
+          data: { labels: labels24, datasets: [{ data: mkData(950, 80, 12), borderColor: '#E65100', backgroundColor: '#E6510018', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }] },
+          options: mkOpts(),
+        });
+        S.charts.temp = new Chart(document.getElementById('cTemp'), {
+          type: 'line',
+          data: { labels: labels24, datasets: [{ data: mkData(24, 1.5, 12), borderColor: '#1565C0', backgroundColor: '#1565C018', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }] },
+          options: mkOpts(),
+        });
+        S.charts.hum = new Chart(document.getElementById('cHum'), {
+          type: 'line',
+          data: { labels: labels24, datasets: [{ data: mkData(72, 5, 12), borderColor: '#4527A0', backgroundColor: '#4527A018', fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }] },
+          options: mkOpts(),
+        });
+      }
+
+      function toggleTheme() {
+        const html = document.documentElement,
+          isDark = html.getAttribute('data-theme') === 'dark';
+        html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        const tgl = document.getElementById('themeTgl');
+        if (tgl) tgl.classList.toggle('on', !isDark);
+        if (S.chartsReady) {
+          setTimeout(() => {
+            Object.values(S.charts).forEach((c) => {
+              if (!c) return;
+              const gc = getTV('--bdr'),
+                tc = getTV('--t3');
+              c.options.scales.x.grid.color = gc;
+              c.options.scales.y.grid.color = gc;
+              c.options.scales.x.ticks.color = tc;
+              c.options.scales.y.ticks.color = tc;
+              c.update('none');
+            });
+          }, 100);
+        }
+        setTimeout(updatePlantStatusCard, 100);
+      }
+
+      (function () {
+        const h = new Date().getHours();
+        let g = 'Good Morning';
+        if (h >= 12 && h < 17) g = 'Good Afternoon';
+        else if (h >= 17) g = 'Good Evening';
+        const el = document.getElementById('greeting');
+        if (el) el.textContent = g;
+        updateDashSensors();
+        updatePlantStatusCard();
+      })();
+    </script>
+  </body>
+</html>
